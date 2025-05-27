@@ -1,29 +1,46 @@
-import { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
+import Home from "./files/homepage";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createContext, useState } from "react";
+import SignUpForm from "./files/signUpForm";
 
-function App() {
-  const [fruits, setFruites] = useState([]);
+export const shopContext = createContext({
+  user: [],
+  addUser: () => {},
+});
 
-  const fetchApi = async () => {
-    const response = await axios.get("http://localhost:3000/");
-    setFruites(response.data.fruits);
-    console.log(response.data.fruits);
-  };
-
-  useEffect(() => {
-    fetchApi();
-  }, []);
-
+function Layout() {
   return (
     <>
-      {fruits.map((fruit, index) => (
-        <div key={index}>
-          <p>{fruit}</p>
-        </div>
-      ))}
+      <main>
+        <Outlet />
+      </main>
     </>
   );
 }
 
-export default App;
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { path: "/", element: <Home /> },
+      { path: "/sign-up", element: <SignUpForm /> },
+    ],
+  },
+]);
+
+export default function App() {
+  const [user, setUser] = useState(null);
+
+  const addUser = () => {
+    setUser("hussain");
+  };
+
+  return (
+    <shopContext.Provider value={{ user, addUser }}>
+      <RouterProvider router={router} />
+    </shopContext.Provider>
+  );
+}
