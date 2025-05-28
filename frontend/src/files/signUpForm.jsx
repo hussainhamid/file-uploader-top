@@ -1,21 +1,46 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function signUpForm() {
-  const [message, setMessage] = useState(0);
+  const navigate = useNavigate();
 
-  const fetchApi = async () => {
-    const res = await axios.post("http://localhost:3000/sign-up");
-    setMessage(res.data.message);
+  const [message, setMessage] = useState("");
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post("http://localhost:3000/sign-up", {
+        username: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      setMessage(res.data.message);
+
+      if (res.data.success) {
+        setSuccess(true);
+      }
+    } catch (err) {
+      console.error("error in signUpForm.jsx: ", err);
+      setMessage("sign up failed");
+    }
   };
 
-  useEffect(() => {
-    fetchApi();
-  }, []);
+  if (success) {
+    navigate("/");
+  }
 
   return (
     <>
-      <form method="POST" action="/sign-up">
+      <form onSubmit={handleSubmit}>
         <label htmlFor="name">Username: </label>
         <input
           name="name"
@@ -23,6 +48,10 @@ export default function signUpForm() {
           type="text"
           required
           placeholder="dave smith"
+          value={data.name}
+          onChange={(e) => {
+            setData({ ...data, name: e.target.value });
+          }}
         ></input>
 
         <label htmlFor="email">Email: </label>
@@ -31,6 +60,10 @@ export default function signUpForm() {
           className="email input"
           type="email"
           placeholder="davesmith@gmail.com"
+          value={data.email}
+          onChange={(e) => {
+            setData({ ...data, email: e.target.value });
+          }}
         ></input>
 
         <label htmlFor="password">Password:</label>
@@ -39,6 +72,10 @@ export default function signUpForm() {
           className="password input"
           type="password"
           required
+          value={data.password}
+          onChange={(e) => {
+            setData({ ...data, password: e.target.value });
+          }}
         ></input>
 
         <button type="submit">Sign up</button>
