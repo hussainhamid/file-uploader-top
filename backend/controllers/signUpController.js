@@ -1,6 +1,5 @@
 const db = require("../db/query");
 const bcrypt = require("bcryptjs");
-const passport = require("passport");
 
 async function signUpPost(req, res, next) {
   try {
@@ -18,9 +17,9 @@ async function signUpPost(req, res, next) {
       if (err) {
         return next(err);
       }
-    });
 
-    return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, user });
+    });
   } catch (err) {
     console.log("error in signUpController.js: ", err);
     return res.status(500).json({ success: false, message: "signup failed" });

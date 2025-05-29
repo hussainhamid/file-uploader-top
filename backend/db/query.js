@@ -33,8 +33,19 @@ async function checksUser(id) {
   return rows;
 }
 
+async function checksUserByUsername(username) {
+  const rows = await prisma.user.findFirst({
+    where: {
+      username: username,
+    },
+  });
+
+  return rows;
+}
+
 module.exports = {
   getEverything,
   createUser,
   checksUser,
+  checksUserByUsername,
 };

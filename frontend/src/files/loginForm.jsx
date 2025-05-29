@@ -1,26 +1,27 @@
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { shopContext } from "../App";
 
-export default function SignUpForm() {
-  const { addUser } = useContext(shopContext);
-
+export default function LoginForm() {
   const navigate = useNavigate();
 
-  const [message, setMessage] = useState("");
+  const { addUser } = useContext(shopContext);
+
   const [data, setData] = useState({
     name: "",
     email: "",
     password: "",
   });
 
-  const handleSubmit = async (e) => {
+  const [message, setMessage] = useState("");
+
+  async function handleSubmit(e) {
     e.preventDefault();
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/sign-up",
+        "http://localhost:3000/log-in",
         {
           username: data.name,
           email: data.email,
@@ -29,42 +30,34 @@ export default function SignUpForm() {
         { withCredentials: true }
       );
 
-      setMessage("sign up successfull");
-
       if (res.data.success) {
         addUser(res.data.user.username);
-
         navigate("/");
       }
     } catch (err) {
-      console.error("error in signUpForm.jsx: ", err);
-      setMessage("sign up failed");
+      console.error("error in loginForm.jsx: ", err);
+      setMessage("log in failed");
     }
-  };
+  }
 
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Username: </label>
+        <label htmlFor="name">Username:</label>
         <input
           name="name"
           className="name input"
           type="text"
-          required
-          placeholder="dave smith"
-          value={data.name}
           onChange={(e) => {
             setData({ ...data, name: e.target.value });
           }}
         ></input>
 
-        <label htmlFor="email">Email: </label>
+        <label htmlFor="email">Email:</label>
         <input
           name="email"
           className="email input"
           type="email"
-          placeholder="davesmith@gmail.com"
-          value={data.email}
           onChange={(e) => {
             setData({ ...data, email: e.target.value });
           }}
@@ -75,16 +68,13 @@ export default function SignUpForm() {
           name="password"
           className="password input"
           type="password"
-          required
-          value={data.password}
           onChange={(e) => {
             setData({ ...data, password: e.target.value });
           }}
         ></input>
 
-        <button type="submit">Sign up</button>
+        <button type="submit">log in</button>
       </form>
-
       <h1>{message}</h1>
     </>
   );

@@ -4,26 +4,32 @@ const bcrypt = require("bcryptjs");
 const db = require("../db/query");
 
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    try {
-      const user = await db.getEverything(username);
+  new LocalStrategy(
+    {
+      usernameField: "username",
+      passwordField: "password",
+    },
+    async (username, password, done) => {
+      try {
+        const user = await db.getEverything(username);
 
-      if (!user) {
-        return done(null, false, { message: "user does not exists" });
+        if (!user) {
+          return done(null, false, { message: "user does not exists" });
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+          return done(null, false, { message: "wrong password" });
+        }
+
+        return done(null, user);
+      } catch (err) {
+        console.error("error in localstrategy: ", err);
+        return done(err);
       }
-
-      const match = await bcrypt.compare(password, user.password);
-
-      if (!match) {
-        return done(null, false, { message: "wrong password" });
-      }
-
-      return done(null, user);
-    } catch (err) {
-      console.error("error in localstrategy: ", err);
-      return done(err);
     }
-  })
+  )
 );
 
 passport.serializeUser((user, done) => {

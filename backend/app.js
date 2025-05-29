@@ -11,8 +11,14 @@ require("./config/passport");
 app.use(express.urlencoded({ extended: true }));
 
 const { signUpRouter } = require("./routers/signUpRouter");
+const { loginRouter } = require("./routers/loginRouter");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(
   expressSession({
@@ -40,6 +46,16 @@ app.get("/", (req, res) => {
 });
 
 app.use("/sign-up", signUpRouter);
+
+app.use("/log-in", loginRouter);
+
+app.get("/me", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.json({ user: req.user });
+  } else {
+    res.json({ user: null });
+  }
+});
 
 app.listen(3000, () => {
   console.log("app running on 3000");
