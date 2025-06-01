@@ -2,6 +2,51 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { shopContext } from "../App";
+import styled from "styled-components";
+
+const FormDiv = styled.div`
+  border: 1px solid grey;
+  border-radius: 20px;
+  height: 370px;
+  width: 270px;
+  padding: 20px;
+  display: flex;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: fit-content;
+`;
+
+const InputFocus = styled.input`
+  border: 1px solid grey;
+  padding: 5px;
+  border-radius: 4px;
+
+  &:focus {
+    outline: none;
+  }
+`;
+
+const BtnDiv = styled.div`
+  display: flex;
+  gap: 15px;
+`;
+
+const Btn = styled.button`
+  font-size: 17px;
+`;
 
 export default function SignUpForm() {
   const { addUser } = useContext(shopContext);
@@ -44,46 +89,58 @@ export default function SignUpForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Username: </label>
-        <input
-          name="name"
-          className="name input"
-          type="text"
-          required
-          placeholder="dave smith"
-          value={data.name}
-          onChange={(e) => {
-            setData({ ...data, name: e.target.value });
-          }}
-        ></input>
+      <FormDiv>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <label htmlFor="name">*Username: </label>
+            <InputFocus
+              name="name"
+              className="name input"
+              type="text"
+              required
+              placeholder="dave smith"
+              value={data.name}
+              onChange={(e) => {
+                setData({ ...data, name: e.target.value });
+              }}
+            ></InputFocus>
+          </FormGroup>
 
-        <label htmlFor="email">Email: </label>
-        <input
-          name="email"
-          className="email input"
-          type="email"
-          placeholder="davesmith@gmail.com"
-          value={data.email}
-          onChange={(e) => {
-            setData({ ...data, email: e.target.value });
-          }}
-        ></input>
+          <FormGroup>
+            <label htmlFor="email">Email: </label>
+            <InputFocus
+              name="email"
+              className="email input"
+              type="email"
+              placeholder="davesmith@gmail.com"
+              value={data.email}
+              onChange={(e) => {
+                setData({ ...data, email: e.target.value });
+              }}
+            ></InputFocus>
+          </FormGroup>
 
-        <label htmlFor="password">Password:</label>
-        <input
-          name="password"
-          className="password input"
-          type="password"
-          required
-          value={data.password}
-          onChange={(e) => {
-            setData({ ...data, password: e.target.value });
-          }}
-        ></input>
+          <FormGroup>
+            <label htmlFor="password">*Password:</label>
+            <InputFocus
+              name="password"
+              className="password input"
+              type="password"
+              placeholder="password"
+              required
+              value={data.password}
+              onChange={(e) => {
+                setData({ ...data, password: e.target.value });
+              }}
+            ></InputFocus>
+          </FormGroup>
 
-        <button type="submit">Sign up</button>
-      </form>
+          <BtnDiv>
+            <Btn type="submit">Sign-up</Btn>
+            <Btn onClick={() => navigate("/log-in")}>Log-in</Btn>
+          </BtnDiv>
+        </Form>
+      </FormDiv>
 
       <h1>{message}</h1>
     </>

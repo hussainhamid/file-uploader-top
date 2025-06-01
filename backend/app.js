@@ -12,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const { signUpRouter } = require("./routers/signUpRouter");
 const { loginRouter } = require("./routers/loginRouter");
+const { logoutRouter } = require("./routers/logoutRouter");
 
 app.use(
   cors({
@@ -48,6 +49,8 @@ app.get("/", (req, res) => {
 app.use("/sign-up", signUpRouter);
 
 app.use("/log-in", loginRouter);
+
+app.use("/log-out", logoutRouter);
 
 app.get("/me", (req, res) => {
   if (req.isAuthenticated()) {
