@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -13,6 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 const { signUpRouter } = require("./routers/signUpRouter");
 const { loginRouter } = require("./routers/loginRouter");
 const { logoutRouter } = require("./routers/logoutRouter");
+const { addFileRouter } = require("./routers/addFileRouter");
 
 app.use(
   cors({
@@ -28,7 +31,7 @@ app.use(
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
     },
-    secret: "a secret",
+    secret: process.env.SECRET,
     store: new PrismaSessionStore(new PrismaClient(), {
       checkPeriod: 2 * 60 * 1000,
       dbRecordIdIsSessionId: true,
@@ -51,6 +54,8 @@ app.use("/sign-up", signUpRouter);
 app.use("/log-in", loginRouter);
 
 app.use("/log-out", logoutRouter);
+
+app.use("/add-file", addFileRouter);
 
 app.get("/me", (req, res) => {
   if (req.isAuthenticated()) {

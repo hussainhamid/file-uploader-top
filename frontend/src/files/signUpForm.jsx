@@ -142,7 +142,7 @@ export default function SignUpForm() {
         </Form>
       </FormDiv>
 
-      <h1>{message}</h1>
+      <p>{message}</p>
     </>
   );
 }

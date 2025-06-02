@@ -137,7 +137,7 @@ export default function LoginForm() {
           </BtnDiv>
         </Form>
       </FormDiv>
-      <h1 color="red">{message}</h1>
+      <p>{message}</p>
     </>
   );
 }

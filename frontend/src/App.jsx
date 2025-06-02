@@ -5,6 +5,7 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
 import SignUpForm from "./files/signUpForm";
 import LoginForm from "./files/loginForm";
+import AddFile from "./files/AddFile";
 
 export const shopContext = createContext({
   user: "",
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/sign-up", element: <SignUpForm /> },
       { path: "/log-in", element: <LoginForm /> },
+      { path: "/add-file", element: <AddFile /> },
     ],
   },
 ]);
