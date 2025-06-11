@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import styled from "styled-components";
 import { shopContext } from "../App";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +34,12 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (!user) {
+      navigate("/log-in");
+    }
+  }, [user]);
+
   return (
     <>
       <div>
@@ -50,7 +56,7 @@ export default function Home() {
           log out
         </Btn>
         <Btn onClick={() => navigate("/add-file")}>Add file</Btn>
-        <Btn>Create folder</Btn>
+        <Btn onClick={() => navigate("/create-folder")}>Create folder</Btn>
       </BtnDiv>
     </>
   );

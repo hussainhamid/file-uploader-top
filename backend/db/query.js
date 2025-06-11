@@ -43,9 +43,42 @@ async function checksUserByUsername(username) {
   return rows;
 }
 
+async function addFolder(username, foldername, files) {
+  await prisma.folder.create({
+    data: {
+      username: username,
+      foldername: foldername,
+      files: files,
+    },
+  });
+}
+
+async function getFolder() {
+  const rows = await prisma.folder.findFirst({
+    orderBy: {
+      serialId: "desc",
+    },
+  });
+
+  return rows;
+}
+
+async function getFolderByusername(name) {
+  const rows = await prisma.folder.findMany({
+    where: {
+      username: name,
+    },
+  });
+
+  return rows;
+}
+
 module.exports = {
   getEverything,
   createUser,
   checksUser,
   checksUserByUsername,
+  addFolder,
+  getFolder,
+  getFolderByusername,
 };

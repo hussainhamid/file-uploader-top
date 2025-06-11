@@ -6,10 +6,13 @@ import { createContext, useEffect, useState } from "react";
 import SignUpForm from "./files/signUpForm";
 import LoginForm from "./files/loginForm";
 import AddFile from "./files/AddFile";
+import CreateFolderForm from "./files/createFolder";
 
 export const shopContext = createContext({
   user: "",
   addUser: () => {},
+  folders: [],
+  addFolders: () => {},
 });
 
 function Layout() {
@@ -31,15 +34,24 @@ const router = createBrowserRouter([
       { path: "/sign-up", element: <SignUpForm /> },
       { path: "/log-in", element: <LoginForm /> },
       { path: "/add-file", element: <AddFile /> },
+      { path: "/create-folder", element: <CreateFolderForm /> },
     ],
   },
 ]);
 
 export default function App() {
   const [user, setUser] = useState("");
+  const [folders, setFolders] = useState([]);
 
   const addUser = (username) => {
     setUser(username);
+  };
+
+  const addFolders = (folder) => {
+    setFolders((prev) => [
+      ...prev,
+      { userName: folder.userName, name: folder.name, files: folder.files },
+    ]);
   };
 
   useEffect(() => {
@@ -61,7 +73,7 @@ export default function App() {
   }, []);
 
   return (
-    <shopContext.Provider value={{ user, addUser }}>
+    <shopContext.Provider value={{ user, addUser, addFolders, folders }}>
       <RouterProvider router={router} />
     </shopContext.Provider>
   );

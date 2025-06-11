@@ -16,6 +16,7 @@ const { signUpRouter } = require("./routers/signUpRouter");
 const { loginRouter } = require("./routers/loginRouter");
 const { logoutRouter } = require("./routers/logoutRouter");
 const { addFileRouter } = require("./routers/addFileRouter");
+const { createFolderRouter } = require("./routers/createFolderRouter");
 
 app.use(
   cors({
@@ -56,6 +57,8 @@ app.use("/log-in", loginRouter);
 app.use("/log-out", logoutRouter);
 
 app.use("/add-file", addFileRouter);
+
+app.use("/create-folder", createFolderRouter);
 
 app.get("/me", (req, res) => {
   if (req.isAuthenticated()) {

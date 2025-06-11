@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router";
+import { useEffect } from "react";
 
 const FormDiv = styled.div`
   border: 1px solid grey;
@@ -62,6 +63,26 @@ export default function AddFile() {
       console.error("error in addfile.jsx: ", err);
     }
   }
+
+  useEffect(() => {
+    const fetchFolder = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/create-folder", {
+          withCredentials: true,
+        });
+
+        console.log(res.data.folderName);
+
+        if (res.data.success) {
+          setMessage(res.data.folderName);
+        }
+      } catch (err) {
+        console.error("error in fetchFolder: ", err);
+      }
+    };
+
+    fetchFolder();
+  }, []);
 
   return (
     <>

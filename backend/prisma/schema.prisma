@@ -28,6 +28,15 @@ model User {
   status   Role    @default(MEMBER)
 }
 
+model Folder {
+  serialId   Int      @default(autoincrement())
+  id         String   @id @default(uuid())
+  username   String
+  foldername String
+  files      String[]
+  createdAt  DateTime @default(now())
+}
+
 enum Role {
   MEMBER
   ADMIN
