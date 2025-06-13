@@ -10,10 +10,24 @@ async function createFolderController(req, res) {
 
 async function getFolderController(req, res) {
   const folder = await db.getFolder();
+  const lessFolder = await db.getLessFolder();
 
-  return res
-    .status(200)
-    .json({ success: true, folderName: folder?.foldername });
+  if (!folder) {
+    return res.status(500).json({ success: false });
+  }
+
+  const currentFolder = folder[0];
+
+  const allFolders = folder.map((f) => f.foldername);
+
+  const lessFolders = lessFolder.map((f) => f.foldername);
+
+  return res.status(200).json({
+    success: true,
+    folderName: currentFolder.foldername,
+    allFolders: allFolders,
+    lessFolders: lessFolders,
+  });
 }
 
 module.exports = {

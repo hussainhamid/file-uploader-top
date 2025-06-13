@@ -54,9 +54,28 @@ async function addFolder(username, foldername, files) {
 }
 
 async function getFolder() {
-  const rows = await prisma.folder.findFirst({
+  const rows = await prisma.folder.findMany({
     orderBy: {
       serialId: "desc",
+    },
+    select: {
+      foldername: true,
+    },
+  });
+
+  return rows;
+}
+
+async function getLessFolder() {
+  const rows = await prisma.folder.findMany({
+    take: 5,
+
+    orderBy: {
+      serialId: "desc",
+    },
+
+    select: {
+      foldername: true,
     },
   });
 
@@ -80,5 +99,6 @@ module.exports = {
   checksUserByUsername,
   addFolder,
   getFolder,
+  getLessFolder,
   getFolderByusername,
 };

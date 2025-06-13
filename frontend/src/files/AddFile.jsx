@@ -71,8 +71,6 @@ export default function AddFile() {
           withCredentials: true,
         });
 
-        console.log(res.data.folderName);
-
         if (res.data.success) {
           setMessage(res.data.folderName);
         }
