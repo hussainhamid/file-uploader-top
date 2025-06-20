@@ -14,6 +14,7 @@ const Nav = styled.nav`
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
+  margin-top: 20px;
 `;
 
 const BtnDiv = styled.div`
@@ -27,10 +28,13 @@ const Btn = styled.button`
 `;
 
 export default function Home() {
-  const { user, addUser } = useContext(shopContext);
+  const { user, addUser, loading } = useContext(shopContext);
   const [buttons, setBtns] = useState([]);
   const [btnMessage, setBtnMessage] = useState("see less");
   const [showAll, setShowAll] = useState(false);
+  const [selectBtn, setSelectBtn] = useState(false);
+  const [checkedBtn, setCheckedBtn] = useState([]);
+  const [deleteMsg, setDeleteMsg] = useState("");
 
   const navigate = useNavigate();
 
@@ -49,19 +53,56 @@ export default function Home() {
     }
   };
 
+  const fillsArray = async (folderName, isChecked) => {
+    setCheckedBtn((prev) => {
+      if (isChecked) {
+        return [...prev, folderName];
+      } else {
+        return prev.filter((name) => name !== folderName);
+      }
+    });
+  };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (checkedBtn.length >= 1) {
+        const res = await axios.post(
+          `http://localhost:3000/delete/${user}`,
+          { folders: checkedBtn },
+          { withCredentials: true }
+        );
+
+        if (res.data.success) {
+          setDeleteMsg(`folder deleted: ${res.data.folders} pls reload`);
+        }
+      }
+    } catch (err) {
+      console.error("error in handleDelete in homepage: ", err);
+    }
+  };
+
   useEffect(() => {
-    if (!user) {
-      navigate("/log-in");
+    if (!loading) {
+      if (!user) {
+        navigate("/log-in");
+      }
     }
 
     fetchLessFolder();
-  }, [user]);
+  }, [navigate, user, loading]);
 
   const fetchLessFolder = async () => {
+    if (!user) return;
+
     try {
-      const res = await axios.get("http://localhost:3000/create-folder", {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `http://localhost:3000/create-folder/${user}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
         setBtns(res.data.lessFolders);
@@ -76,7 +117,12 @@ export default function Home() {
 
   const fetchAllFolder = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/create-folder");
+      const res = await axios.get(
+        `http://localhost:3000/create-folder/${user}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
         setBtns(res.data.allFolders);
@@ -90,7 +136,6 @@ export default function Home() {
   };
 
   const handleClick = () => {
-    console.log("button clicked: ", showAll);
     if (showAll) {
       fetchAllFolder();
     } else {
@@ -101,9 +146,23 @@ export default function Home() {
   return (
     <RootDiv>
       <Nav>
-        {buttons.map((btn, index) => (
-          <Btn key={index}>{btn}</Btn>
-        ))}
+        {selectBtn
+          ? buttons.map((btn, index) => (
+              <label key={index}>
+                <input
+                  type="checkbox"
+                  onChange={(e) => {
+                    fillsArray(btn, e.target.checked);
+                  }}
+                />
+                {btn}
+              </label>
+            ))
+          : buttons.map((btn, index) => (
+              <Btn key={index} onClick={() => navigate(`/folder/${btn}`)}>
+                {btn}
+              </Btn>
+            ))}
         <Btn
           onClick={() => {
             handleClick();
@@ -119,16 +178,37 @@ export default function Home() {
 
       <BtnDiv>
         <Btn
-          type="submit"
           onClick={() => {
             logout();
           }}
         >
           log out
         </Btn>
-        <Btn onClick={() => navigate("/add-file")}>Add file</Btn>
         <Btn onClick={() => navigate("/create-folder")}>Create folder</Btn>
+        <Btn
+          onClick={() => {
+            if (selectBtn) {
+              setSelectBtn(false);
+            } else {
+              setSelectBtn(true);
+            }
+          }}
+        >
+          Select Folder
+        </Btn>
+
+        {selectBtn && (
+          <Btn
+            onClick={(e) => {
+              handleDelete(e);
+            }}
+          >
+            Delete
+          </Btn>
+        )}
       </BtnDiv>
+
+      <p>{deleteMsg}</p>
     </RootDiv>
   );
 }

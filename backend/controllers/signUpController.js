@@ -7,11 +7,7 @@ async function signUpPost(req, res, next) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    console.log("creating user:", username);
-
     const user = await db.createUser(username, email, hashedPassword);
-
-    console.log("created user:", user);
 
     req.login(user, (err) => {
       if (err) {

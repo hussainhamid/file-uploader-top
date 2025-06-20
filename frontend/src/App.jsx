@@ -5,14 +5,15 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
 import SignUpForm from "./files/signUpForm";
 import LoginForm from "./files/loginForm";
-import AddFile from "./files/AddFile";
 import CreateFolderForm from "./files/createFolder";
+import OpenFolder from "./files/openFolder";
 
 export const shopContext = createContext({
   user: "",
   addUser: () => {},
   folders: [],
   addFolders: () => {},
+  loading: true,
 });
 
 function Layout() {
@@ -30,11 +31,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { path: "/", element: <Home /> },
+      { path: "/", element: <LoginForm /> },
+      { path: "/:userName", element: <Home /> },
       { path: "/sign-up", element: <SignUpForm /> },
       { path: "/log-in", element: <LoginForm /> },
-      { path: "/add-file", element: <AddFile /> },
       { path: "/create-folder", element: <CreateFolderForm /> },
+      { path: "/folder/:folderName", element: <OpenFolder /> },
     ],
   },
 ]);
@@ -42,6 +44,7 @@ const router = createBrowserRouter([
 export default function App() {
   const [user, setUser] = useState("");
   const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const addUser = (username) => {
     setUser(username);
@@ -55,7 +58,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    async function fetchuser() {
+    async function fetchUser() {
       try {
         const res = await axios.get("http://localhost:3000/me", {
           withCredentials: true,
@@ -65,15 +68,19 @@ export default function App() {
           addUser(res.data.user.username);
         }
       } catch (err) {
-        console.error("error in fetchData func: ", err);
+        console.error("Error fetching /me", err);
+      } finally {
+        setLoading(false);
       }
     }
 
-    fetchuser();
+    fetchUser();
   }, []);
 
   return (
-    <shopContext.Provider value={{ user, addUser, addFolders, folders }}>
+    <shopContext.Provider
+      value={{ user, addUser, addFolders, folders, loading }}
+    >
       <RouterProvider router={router} />
     </shopContext.Provider>
   );

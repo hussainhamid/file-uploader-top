@@ -7,7 +7,6 @@ async function getEverything(username) {
       username: username,
     },
   });
-  console.log(all);
   return all;
 }
 
@@ -53,8 +52,12 @@ async function addFolder(username, foldername, files) {
   });
 }
 
-async function getFolder() {
+async function getFolder(name) {
   const rows = await prisma.folder.findMany({
+    where: {
+      username: name,
+    },
+
     orderBy: {
       serialId: "desc",
     },
@@ -63,11 +66,19 @@ async function getFolder() {
     },
   });
 
+  if (rows.length === 0) {
+    return null;
+  }
+
   return rows;
 }
 
-async function getLessFolder() {
+async function getLessFolder(name) {
   const rows = await prisma.folder.findMany({
+    where: {
+      username: name,
+    },
+
     take: 5,
 
     orderBy: {
@@ -78,6 +89,10 @@ async function getLessFolder() {
       foldername: true,
     },
   });
+
+  if (rows === 0) {
+    return null;
+  }
 
   return rows;
 }
@@ -92,6 +107,65 @@ async function getFolderByusername(name) {
   return rows;
 }
 
+async function getFolderByName(name) {
+  const rows = await prisma.folder.findFirst({
+    where: { foldername: name },
+  });
+
+  return rows;
+}
+
+async function addFileByFolderName(folderName, userName, file) {
+  await prisma.folder.update({
+    where: {
+      foldername_username: {
+        username: userName,
+        foldername: folderName,
+      },
+    },
+    data: {
+      files: {
+        push: [file],
+      },
+    },
+  });
+}
+
+async function deleteAFolder(username, foldernames) {
+  await prisma.folder.deleteMany({
+    where: {
+      username: username,
+      foldername: { in: foldernames },
+    },
+  });
+}
+
+async function deleteAFile(username, foldername, checkedFiles) {
+  const folder = await prisma.folder.findFirst({
+    where: {
+      username: username,
+      foldername: foldername,
+    },
+  });
+
+  const updatedFiles = folder.files.filter(
+    (file) => !checkedFiles.includes(file)
+  );
+
+  await prisma.folder.update({
+    where: {
+      foldername_username: {
+        foldername: foldername,
+        username: username,
+      },
+    },
+
+    data: {
+      files: updatedFiles,
+    },
+  });
+}
+
 module.exports = {
   getEverything,
   createUser,
@@ -101,4 +175,8 @@ module.exports = {
   getFolder,
   getLessFolder,
   getFolderByusername,
+  getFolderByName,
+  addFileByFolderName,
+  deleteAFolder,
+  deleteAFile,
 };

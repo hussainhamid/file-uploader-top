@@ -9,14 +9,16 @@ async function createFolderController(req, res) {
 }
 
 async function getFolderController(req, res) {
-  const folder = await db.getFolder();
-  const lessFolder = await db.getLessFolder();
+  const { userName } = req.params;
+
+  const folder = await db.getFolder(userName);
+  const lessFolder = await db.getLessFolder(userName);
 
   if (!folder) {
     return res.status(500).json({ success: false });
   }
 
-  const currentFolder = folder[0];
+  const currentFolder = folder[0].foldername;
 
   const allFolders = folder.map((f) => f.foldername);
 
@@ -24,7 +26,7 @@ async function getFolderController(req, res) {
 
   return res.status(200).json({
     success: true,
-    folderName: currentFolder.foldername,
+    folderName: currentFolder,
     allFolders: allFolders,
     lessFolders: lessFolders,
   });

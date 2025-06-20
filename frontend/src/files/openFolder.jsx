@@ -1,0 +1,224 @@
+import { useParams } from "react-router";
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { useContext } from "react";
+import { shopContext } from "../App";
+import styled from "styled-components";
+
+const RooDiv = styled.div`
+  height: 100vh;
+`;
+
+const FormDiv = styled.div`
+  border: 1px solid grey;
+  border-radius: 20px;
+  height: 150px;
+  width: auto;
+  padding: 30px;
+  display: flex;
+  margin-top: 150px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: fit-content;
+`;
+
+const BtnDiv = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+`;
+
+const Btn = styled.button`
+  font-size: 15px;
+`;
+
+const Nav = styled.nav`
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
+`;
+
+export default function OpenFolder() {
+  const { folderName } = useParams();
+  const { user } = useContext(shopContext);
+  const [folderData, setFolderData] = useState(null);
+  const [message, setMessage] = useState("");
+  const [file, setFile] = useState(null);
+  const [selectBtn, setSelectBtn] = useState(false);
+  const [checkedBtn, setCheckedBtn] = useState([]);
+  const [deleteMsg, setDeleteMsg] = useState("");
+
+  const navigate = useNavigate();
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("uploadedFile", file);
+    formData.append("folderName", folderData.foldername);
+    formData.append("userName", folderData.username);
+
+    try {
+      const res = await axios.post(
+        `http://localhost:3000/add-file/${folderName}`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (res.data.success) {
+        setMessage(
+          `file uploaded successfully to ${folderData.foldername} ${folderData.username}`
+        );
+      }
+    } catch (err) {
+      console.error("error in addfile.jsx: ", err);
+    }
+  }
+
+  const fillsArray = (file, checked) => {
+    setCheckedBtn((prev) => {
+      if (checked) {
+        return [...prev, file];
+      } else {
+        return prev.filter((name) => name != file);
+      }
+    });
+  };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (checkedBtn.length >= 1) {
+        const res = await axios.post(
+          `http://localhost:3000/delete-file/${folderData.foldername}`,
+          { files: checkedBtn, user: user },
+          { withCredentials: true }
+        );
+
+        if (res.data.success) {
+          setDeleteMsg(`deleted file: ${res.data.files} pls reload`);
+        }
+      }
+    } catch (err) {
+      console.error("error in handleDelete openFolder.jsx: ", err);
+    }
+  };
+
+  useEffect(() => {
+    const fetchFolder = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/folder/${folderName}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (res.data.success) {
+          setFolderData(res.data.folder);
+        }
+      } catch (err) {
+        console.error("error in openFolder.jsx useEffect: ", err);
+      }
+    };
+
+    fetchFolder();
+  }, [folderName]);
+
+  if (!folderData) return <div>...loading</div>;
+
+  return (
+    <RooDiv>
+      <Nav>
+        {selectBtn
+          ? folderData.files.map((file, index) => (
+              <label key={index}>
+                <input
+                  type="checkbox"
+                  onChange={(e) => fillsArray(file, e.target.checked)}
+                />
+                {file}
+              </label>
+            ))
+          : folderData.files.map((file, index) => (
+              <Btn
+                key={`${file}-${index}`}
+                onClick={() => {
+                  window.open(`http://localhost:3000/file/${file}`, "_blank");
+                }}
+              >
+                {file}
+              </Btn>
+            ))}
+      </Nav>
+
+      <FormDiv>
+        <Form encType="multipart/form-data" onSubmit={handleSubmit}>
+          <FormGroup>
+            <label>File: </label>
+            <input
+              type="file"
+              required
+              name="uploadedFile"
+              onChange={(e) => setFile(e.target.files[0])}
+            ></input>
+          </FormGroup>
+
+          <BtnDiv>
+            <Btn type="submit">Add file</Btn>
+            <Btn
+              onClick={() => {
+                navigate(`/${user}`);
+              }}
+            >
+              Go back
+            </Btn>
+
+            <Btn
+              onClick={(e) => {
+                e.preventDefault();
+
+                if (selectBtn) {
+                  setSelectBtn(false);
+                } else {
+                  setSelectBtn(true);
+                }
+              }}
+            >
+              Select files
+            </Btn>
+
+            {selectBtn && <Btn onClick={(e) => handleDelete(e)}>Delete</Btn>}
+          </BtnDiv>
+        </Form>
+      </FormDiv>
+
+      <p>folder: {folderData.foldername}</p>
+      <p>created by: {folderData.username}</p>
+
+      <p>{message}</p>
+
+      <p>{deleteMsg}</p>
+    </RooDiv>
+  );
+}

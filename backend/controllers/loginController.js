@@ -2,7 +2,7 @@ const passport = require("passport");
 require("../config/passport");
 
 async function loginPost(req, res, next) {
-  passport.authenticate("local", (err, user, info) => {
+  await passport.authenticate("local", (err, user, info) => {
     if (err) {
       return next(err);
     }

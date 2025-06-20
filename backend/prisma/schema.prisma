@@ -35,6 +35,8 @@ model Folder {
   foldername String
   files      String[]
   createdAt  DateTime @default(now())
+
+  @@unique([foldername, username])
 }
 
 enum Role {

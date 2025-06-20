@@ -30,9 +30,12 @@ const FormGroup = styled.div`
 `;
 
 const InputFocus = styled.input`
-  border: 1px solid grey;
   padding: 5px;
   border-radius: 4px;
+  border: none;
+  border-bottom: 1px solid grey;
+  outline: none;
+  background: #242424;
 
   &:focus {
     outline: none;
@@ -49,7 +52,7 @@ const Btn = styled.button`
 `;
 
 export default function SignUpForm() {
-  const { addUser } = useContext(shopContext);
+  const { addUser, user } = useContext(shopContext);
 
   const navigate = useNavigate();
 
@@ -79,7 +82,7 @@ export default function SignUpForm() {
       if (res.data.success) {
         addUser(res.data.user.username);
 
-        navigate("/");
+        navigate(`/${res.data.user.username}`);
       }
     } catch (err) {
       console.error("error in signUpForm.jsx: ", err);
@@ -92,7 +95,7 @@ export default function SignUpForm() {
       <FormDiv>
         <Form onSubmit={handleSubmit}>
           <FormGroup>
-            <label htmlFor="name">*Username: </label>
+            <label htmlFor="name">*Username</label>
             <InputFocus
               name="name"
               className="name input"
@@ -107,7 +110,7 @@ export default function SignUpForm() {
           </FormGroup>
 
           <FormGroup>
-            <label htmlFor="email">Email: </label>
+            <label htmlFor="email">Email</label>
             <InputFocus
               name="email"
               className="email input"
@@ -121,7 +124,7 @@ export default function SignUpForm() {
           </FormGroup>
 
           <FormGroup>
-            <label htmlFor="password">*Password:</label>
+            <label htmlFor="password">*Password</label>
             <InputFocus
               name="password"
               className="password input"

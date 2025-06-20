@@ -7,7 +7,7 @@ const Router = require("express");
 
 const createFolderRouter = Router();
 
-createFolderRouter.get("/", getFolderController);
+createFolderRouter.get("/:userName", getFolderController);
 createFolderRouter.post("/", createFolderController);
 
 module.exports = {

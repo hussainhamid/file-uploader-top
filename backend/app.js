@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const path = require("path");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -17,6 +17,9 @@ const { loginRouter } = require("./routers/loginRouter");
 const { logoutRouter } = require("./routers/logoutRouter");
 const { addFileRouter } = require("./routers/addFileRouter");
 const { createFolderRouter } = require("./routers/createFolderRouter");
+const { openFolderRouter } = require("./routers/openFolderRouter");
+const { deleteFolderRouter } = require("./routers/deleteFolderRouter");
+const { deleteFileRouter } = require("./routers/deleteFileRouter");
 
 app.use(
   cors({
@@ -59,6 +62,14 @@ app.use("/log-out", logoutRouter);
 app.use("/add-file", addFileRouter);
 
 app.use("/create-folder", createFolderRouter);
+
+app.use("/folder", openFolderRouter);
+
+app.use("/file", express.static(path.join(__dirname, `./uploads`)));
+
+app.use("/delete", deleteFolderRouter);
+
+app.use("/delete-file", deleteFileRouter);
 
 app.get("/me", (req, res) => {
   if (req.isAuthenticated()) {
