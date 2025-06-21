@@ -77,7 +77,7 @@ export default function OpenFolder() {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/add-file/${folderName}`,
+        `http://localhost:3000/add-file/${folderData.folderName}`,
         formData,
         {
           withCredentials: true,
@@ -85,12 +85,14 @@ export default function OpenFolder() {
       );
 
       if (res.data.success) {
+        await fetchFolder();
+
         setMessage(
           `file uploaded successfully to ${folderData.foldername} ${folderData.username}`
         );
       }
     } catch (err) {
-      console.error("error in addfile.jsx: ", err);
+      console.error("error in addfile ", err);
     }
   }
 
@@ -124,24 +126,24 @@ export default function OpenFolder() {
     }
   };
 
-  useEffect(() => {
-    const fetchFolder = async () => {
-      try {
-        const res = await axios.get(
-          `http://localhost:3000/folder/${folderName}`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (res.data.success) {
-          setFolderData(res.data.folder);
+  const fetchFolder = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:3000/folder/${folderName}`,
+        {
+          withCredentials: true,
         }
-      } catch (err) {
-        console.error("error in openFolder.jsx useEffect: ", err);
-      }
-    };
+      );
 
+      if (res.data.success) {
+        setFolderData(res.data.folder);
+      }
+    } catch (err) {
+      console.error("error in openFolder.jsx useEffect: ", err);
+    }
+  };
+
+  useEffect(() => {
     fetchFolder();
   }, [folderName]);
 
@@ -151,23 +153,23 @@ export default function OpenFolder() {
     <RooDiv>
       <Nav>
         {selectBtn
-          ? folderData.files.map((file, index) => (
-              <label key={index}>
+          ? folderData.File.map((file) => (
+              <label key={file.id}>
                 <input
                   type="checkbox"
-                  onChange={(e) => fillsArray(file, e.target.checked)}
+                  onChange={(e) => fillsArray(file.name, e.target.checked)}
                 />
-                {file}
+                {file.name}
               </label>
             ))
-          : folderData.files.map((file, index) => (
+          : folderData.File.map((file) => (
               <Btn
-                key={`${file}-${index}`}
+                key={file.id}
                 onClick={() => {
-                  window.open(`http://localhost:3000/file/${file}`, "_blank");
+                  window.open(file.url, "_blank");
                 }}
               >
-                {file}
+                {file.name}
               </Btn>
             ))}
       </Nav>

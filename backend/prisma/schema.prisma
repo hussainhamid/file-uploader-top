@@ -33,10 +33,19 @@ model Folder {
   id         String   @id @default(uuid())
   username   String
   foldername String
-  files      String[]
   createdAt  DateTime @default(now())
+  File       File[]
 
   @@unique([foldername, username])
+}
+
+model File {
+  id       Int    @id @default(autoincrement())
+  name     String
+  url      String
+  mimeType String
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String
 }
 
 enum Role {

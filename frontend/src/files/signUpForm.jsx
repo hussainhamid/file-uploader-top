@@ -52,7 +52,7 @@ const Btn = styled.button`
 `;
 
 export default function SignUpForm() {
-  const { addUser, user } = useContext(shopContext);
+  const { addUser } = useContext(shopContext);
 
   const navigate = useNavigate();
 

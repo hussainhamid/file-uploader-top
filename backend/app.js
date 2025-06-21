@@ -20,6 +20,7 @@ const { createFolderRouter } = require("./routers/createFolderRouter");
 const { openFolderRouter } = require("./routers/openFolderRouter");
 const { deleteFolderRouter } = require("./routers/deleteFolderRouter");
 const { deleteFileRouter } = require("./routers/deleteFileRouter");
+const { addFileToCloudRouter } = require("./routers/addFileToCloudRouter");
 
 app.use(
   cors({
@@ -59,7 +60,13 @@ app.use("/log-in", loginRouter);
 
 app.use("/log-out", logoutRouter);
 
-app.use("/add-file", addFileRouter);
+//this is the default
+
+// app.use("/add-file", addFileRouter);
+
+//this is the cloud one
+
+app.use("/add-file", addFileToCloudRouter);
 
 app.use("/create-folder", createFolderRouter);
 

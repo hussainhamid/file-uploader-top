@@ -2,7 +2,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function getEverything(username) {
-  const all = await prisma.User.findFirst({
+  const all = await prisma.user.findFirst({
     where: {
       username: username,
     },
@@ -11,7 +11,7 @@ async function getEverything(username) {
 }
 
 async function createUser(username, email, password) {
-  const user = await prisma.User.create({
+  const user = await prisma.user.create({
     data: {
       username: username,
       email: email,
@@ -110,6 +110,7 @@ async function getFolderByusername(name) {
 async function getFolderByName(name) {
   const rows = await prisma.folder.findFirst({
     where: { foldername: name },
+    include: { File: true },
   });
 
   return rows;
@@ -166,6 +167,28 @@ async function deleteAFile(username, foldername, checkedFiles) {
   });
 }
 
+async function addFiles(username, foldername, file) {
+  const folder = await prisma.folder.findFirst({
+    where: {
+      username: username,
+      foldername: foldername,
+    },
+
+    include: {
+      File: true,
+    },
+  });
+
+  if (!folder) throw new Error("folder not found");
+
+  await prisma.file.create({
+    data: {
+      ...file,
+      folderId: folder.id,
+    },
+  });
+}
+
 module.exports = {
   getEverything,
   createUser,
@@ -179,4 +202,5 @@ module.exports = {
   addFileByFolderName,
   deleteAFolder,
   deleteAFile,
+  addFiles,
 };
