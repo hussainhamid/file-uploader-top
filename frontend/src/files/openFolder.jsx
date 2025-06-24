@@ -9,12 +9,14 @@ import styled from "styled-components";
 
 const RooDiv = styled.div`
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 `;
 
 const FormDiv = styled.div`
   border: 1px solid grey;
   border-radius: 20px;
-  height: 150px;
+  height: auto;
   width: auto;
   padding: 30px;
   display: flex;
@@ -55,20 +57,28 @@ const Nav = styled.nav`
   margin-top: 20px;
 `;
 
+const LoadingDiv = styled.div`
+  height: auto;
+  margin-top: 70px;
+`;
+
 export default function OpenFolder() {
   const { folderName } = useParams();
-  const { user } = useContext(shopContext);
+  const { user, loading } = useContext(shopContext);
   const [folderData, setFolderData] = useState(null);
   const [message, setMessage] = useState("");
   const [file, setFile] = useState(null);
   const [selectBtn, setSelectBtn] = useState(false);
   const [checkedBtn, setCheckedBtn] = useState([]);
   const [deleteMsg, setDeleteMsg] = useState("");
+  const [loadingMsg, setLoadingMsg] = useState(false);
 
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    setLoadingMsg(true);
 
     const formData = new FormData();
     formData.append("uploadedFile", file);
@@ -77,7 +87,7 @@ export default function OpenFolder() {
 
     try {
       const res = await axios.post(
-        `http://localhost:3000/add-file/${folderData.folderName}`,
+        `http://localhost:3000/add-file/${folderData.foldername}`,
         formData,
         {
           withCredentials: true,
@@ -86,13 +96,21 @@ export default function OpenFolder() {
 
       if (res.data.success) {
         await fetchFolder();
+        setMessage(`file uploaded successfully`);
+      }
 
-        setMessage(
-          `file uploaded successfully to ${folderData.foldername} ${folderData.username}`
-        );
+      if (res.data.loadingMsg) {
+        setLoadingMsg(false);
       }
     } catch (err) {
+      const errorText =
+        err?.response?.data?.error ||
+        (typeof err?.response?.data === "string"
+          ? err.response.data
+          : "Unknown error");
+
       console.error("error in addfile ", err);
+      setMessage(`file could not be uploaded: ${errorText}`);
     }
   }
 
@@ -118,7 +136,8 @@ export default function OpenFolder() {
         );
 
         if (res.data.success) {
-          setDeleteMsg(`deleted file: ${res.data.files} pls reload`);
+          setDeleteMsg(`deleted file: ${res.data.files}`);
+          await fetchFolder();
         }
       }
     } catch (err) {
@@ -144,6 +163,12 @@ export default function OpenFolder() {
   };
 
   useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        navigate(`/${user}`);
+      }
+    }
+
     fetchFolder();
   }, [folderName]);
 
@@ -157,7 +182,7 @@ export default function OpenFolder() {
               <label key={file.id}>
                 <input
                   type="checkbox"
-                  onChange={(e) => fillsArray(file.name, e.target.checked)}
+                  onChange={(e) => fillsArray(file.id, e.target.checked)}
                 />
                 {file.name}
               </label>
@@ -174,53 +199,61 @@ export default function OpenFolder() {
             ))}
       </Nav>
 
-      <FormDiv>
-        <Form encType="multipart/form-data" onSubmit={handleSubmit}>
-          <FormGroup>
-            <label>File: </label>
-            <input
-              type="file"
-              required
-              name="uploadedFile"
-              onChange={(e) => setFile(e.target.files[0])}
-            ></input>
-          </FormGroup>
+      {loadingMsg && <LoadingDiv>uploading...</LoadingDiv>}
 
-          <BtnDiv>
-            <Btn type="submit">Add file</Btn>
-            <Btn
-              onClick={() => {
-                navigate(`/${user}`);
-              }}
-            >
-              Go back
-            </Btn>
+      <div>
+        <FormDiv>
+          <Form encType="multipart/form-data" onSubmit={handleSubmit}>
+            <FormGroup>
+              <label>File: </label>
+              <input
+                type="file"
+                required
+                name="uploadedFile"
+                onChange={(e) => setFile(e.target.files[0])}
+              ></input>
+            </FormGroup>
 
-            <Btn
-              onClick={(e) => {
-                e.preventDefault();
+            <BtnDiv>
+              <Btn type="submit">Add file</Btn>
+              <Btn
+                onClick={() => {
+                  navigate(`/${user}`);
+                }}
+              >
+                Go back
+              </Btn>
 
-                if (selectBtn) {
-                  setSelectBtn(false);
-                } else {
-                  setSelectBtn(true);
-                }
-              }}
-            >
-              Select files
-            </Btn>
+              <Btn
+                onClick={(e) => {
+                  e.preventDefault();
 
-            {selectBtn && <Btn onClick={(e) => handleDelete(e)}>Delete</Btn>}
-          </BtnDiv>
-        </Form>
-      </FormDiv>
+                  if (selectBtn) {
+                    setSelectBtn(false);
+                  } else {
+                    setSelectBtn(true);
+                  }
+                }}
+              >
+                Select files
+              </Btn>
 
-      <p>folder: {folderData.foldername}</p>
-      <p>created by: {folderData.username}</p>
+              {selectBtn && <Btn onClick={(e) => handleDelete(e)}>Delete</Btn>}
+            </BtnDiv>
+          </Form>
+        </FormDiv>
 
-      <p>{message}</p>
+        <div>
+          <p>folder: {folderData.foldername}</p>
+          <p>created by: {folderData.username}</p>
+          <p>We only support images and videos, sorry for the inconvenience</p>
+        </div>
+      </div>
 
-      <p>{deleteMsg}</p>
+      <div>
+        <p>{message}</p>
+        <p>{deleteMsg}</p>
+      </div>
     </RooDiv>
   );
 }

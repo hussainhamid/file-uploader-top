@@ -1,9 +1,9 @@
 const db = require("../db/query");
 
 async function createFolderController(req, res) {
-  const { name, files, userName } = req.body;
+  const { name, userName } = req.body;
 
-  await db.addFolder(userName, name, files);
+  await db.addFolder(userName, name);
 
   return res.status(200).json({ success: true });
 }

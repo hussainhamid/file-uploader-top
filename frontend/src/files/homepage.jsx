@@ -56,7 +56,7 @@ export default function Home() {
   const fillsArray = async (folderName, isChecked) => {
     setCheckedBtn((prev) => {
       if (isChecked) {
-        return [...prev, folderName];
+        return [...prev, { folderName }];
       } else {
         return prev.filter((name) => name !== folderName);
       }
@@ -75,7 +75,8 @@ export default function Home() {
         );
 
         if (res.data.success) {
-          setDeleteMsg(`folder deleted: ${res.data.folders} pls reload`);
+          setDeleteMsg(`folder deleted`);
+          await fetchLessFolder();
         }
       }
     } catch (err) {

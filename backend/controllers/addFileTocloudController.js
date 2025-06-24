@@ -13,10 +13,10 @@ async function addFileToCloud(req, res) {
 
     await db.addFiles(userName, folderName, fileData);
 
-    return res.json({ success: true, file: fileData });
+    return res.json({ success: true, file: fileData, loadingMsg: true });
   } catch (err) {
     console.error("error in addFileToCloudController.js: ", err);
-    return res.json({ success: false });
+    return res.json({ success: false, error: err || "unknown error" });
   }
 }
 

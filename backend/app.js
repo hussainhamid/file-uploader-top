@@ -15,7 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 const { signUpRouter } = require("./routers/signUpRouter");
 const { loginRouter } = require("./routers/loginRouter");
 const { logoutRouter } = require("./routers/logoutRouter");
-const { addFileRouter } = require("./routers/addFileRouter");
 const { createFolderRouter } = require("./routers/createFolderRouter");
 const { openFolderRouter } = require("./routers/openFolderRouter");
 const { deleteFolderRouter } = require("./routers/deleteFolderRouter");
@@ -60,12 +59,6 @@ app.use("/log-in", loginRouter);
 
 app.use("/log-out", logoutRouter);
 
-//this is the default
-
-// app.use("/add-file", addFileRouter);
-
-//this is the cloud one
-
 app.use("/add-file", addFileToCloudRouter);
 
 app.use("/create-folder", createFolderRouter);
@@ -84,6 +77,10 @@ app.get("/me", (req, res) => {
   } else {
     res.json({ user: null });
   }
+});
+
+app.use((err, req, res, next) => {
+  console.error(`error: ${err.message}`);
 });
 
 app.listen(3000, () => {

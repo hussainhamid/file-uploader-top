@@ -52,7 +52,6 @@ export default function CreateFolderForm() {
 
   const [folder, setFolder] = useState({
     name: "",
-    files: [],
   });
 
   const handleSubmit = async (e) => {
@@ -61,7 +60,6 @@ export default function CreateFolderForm() {
     const folderTosend = {
       userName: user,
       name: folder.name,
-      files: folder.files,
     };
 
     try {
@@ -73,7 +71,8 @@ export default function CreateFolderForm() {
 
       if (res.data.success) {
         addFolders(folderTosend);
-        navigate("/add-file");
+
+        navigate(`/${user}`);
       }
     } catch (err) {
       console.error("error in createFolder.jsx: ", err);

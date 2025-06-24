@@ -42,12 +42,11 @@ async function checksUserByUsername(username) {
   return rows;
 }
 
-async function addFolder(username, foldername, files) {
+async function addFolder(username, foldername) {
   await prisma.folder.create({
     data: {
       username: username,
       foldername: foldername,
-      files: files,
     },
   });
 }
@@ -141,28 +140,22 @@ async function deleteAFolder(username, foldernames) {
   });
 }
 
-async function deleteAFile(username, foldername, checkedFiles) {
+async function deleteAFile(username, foldername, files) {
   const folder = await prisma.folder.findFirst({
     where: {
       username: username,
       foldername: foldername,
     },
+
+    include: {
+      File: true,
+    },
   });
 
-  const updatedFiles = folder.files.filter(
-    (file) => !checkedFiles.includes(file)
-  );
-
-  await prisma.folder.update({
+  await prisma.file.deleteMany({
     where: {
-      foldername_username: {
-        foldername: foldername,
-        username: username,
-      },
-    },
-
-    data: {
-      files: updatedFiles,
+      folderId: folder.id,
+      id: { in: files },
     },
   });
 }
