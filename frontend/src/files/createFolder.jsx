@@ -45,6 +45,27 @@ const Btn = styled.button`
   font-size: 17px;
 `;
 
+const LoadingDiv = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LoadingInsideDiv = styled.div`
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export default function CreateFolderForm() {
   const { addFolders, user } = useContext(shopContext);
 
@@ -53,6 +74,8 @@ export default function CreateFolderForm() {
   const [folder, setFolder] = useState({
     name: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,6 +86,7 @@ export default function CreateFolderForm() {
     };
 
     try {
+      setLoading(true);
       const res = await axios.post(
         "http://localhost:3000/create-folder",
         folderTosend,
@@ -71,11 +95,13 @@ export default function CreateFolderForm() {
 
       if (res.data.success) {
         addFolders(folderTosend);
+        setLoading(false);
 
         navigate(`/${user}`);
       }
     } catch (err) {
       console.error("error in createFolder.jsx: ", err);
+      setLoading(false);
     }
   };
 
@@ -108,6 +134,14 @@ export default function CreateFolderForm() {
           </BtnDiv>
         </Form>
       </FormDiv>
+
+      {loading && (
+        <LoadingDiv>
+          <LoadingInsideDiv>
+            <p>Creating...</p>
+          </LoadingInsideDiv>
+        </LoadingDiv>
+      )}
     </>
   );
 }

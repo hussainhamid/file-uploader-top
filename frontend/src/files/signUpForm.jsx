@@ -51,6 +51,27 @@ const Btn = styled.button`
   font-size: 17px;
 `;
 
+const LoadingDiv = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LoadingInsideDiv = styled.div`
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export default function SignUpForm() {
   const { addUser } = useContext(shopContext);
 
@@ -63,10 +84,13 @@ export default function SignUpForm() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
       const res = await axios.post(
         "http://localhost:3000/sign-up",
         {
@@ -81,12 +105,13 @@ export default function SignUpForm() {
 
       if (res.data.success) {
         addUser(res.data.user.username);
-
+        setLoading(false);
         navigate(`/${res.data.user.username}`);
       }
     } catch (err) {
       console.error("error in signUpForm.jsx: ", err);
       setMessage("sign up failed");
+      setLoading(false);
     }
   };
 
@@ -143,9 +168,17 @@ export default function SignUpForm() {
             <Btn onClick={() => navigate("/log-in")}>Log-in</Btn>
           </BtnDiv>
         </Form>
+
+        <p>{message}</p>
       </FormDiv>
 
-      <p>{message}</p>
+      {loading && (
+        <LoadingDiv>
+          <LoadingInsideDiv>
+            <p>Creating your account...</p>
+          </LoadingInsideDiv>
+        </LoadingDiv>
+      )}
     </>
   );
 }

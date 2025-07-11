@@ -62,6 +62,48 @@ const LoadingDiv = styled.div`
   margin-top: 70px;
 `;
 
+const InputDiv = styled.div`
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+
+  &:hover {
+    border-color: #646cff;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+  }
+`;
+
+const LoadingDivBlurred = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LoadingInsideDiv = styled.div`
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 export default function OpenFolder() {
   const { folderName } = useParams();
   const { user, loading } = useContext(shopContext);
@@ -111,6 +153,7 @@ export default function OpenFolder() {
 
       console.error("error in addfile ", err);
       setMessage(`file could not be uploaded: ${errorText}`);
+      setLoadingMsg(false);
     }
   }
 
@@ -128,6 +171,7 @@ export default function OpenFolder() {
     e.preventDefault();
 
     try {
+      setLoadingMsg(true);
       if (checkedBtn.length >= 1) {
         const res = await axios.post(
           `http://localhost:3000/delete-file/${folderData.foldername}`,
@@ -138,10 +182,12 @@ export default function OpenFolder() {
         if (res.data.success) {
           setDeleteMsg(`deleted file: ${res.data.files}`);
           await fetchFolder();
+          setLoadingMsg(false);
         }
       }
     } catch (err) {
       console.error("error in handleDelete openFolder.jsx: ", err);
+      setLoadingMsg(false);
     }
   };
 
@@ -172,20 +218,22 @@ export default function OpenFolder() {
     fetchFolder();
   }, [folderName]);
 
-  if (!folderData) return <div>...loading</div>;
+  if (!folderData) return <div>Loading...</div>;
 
   return (
     <RooDiv>
       <Nav>
         {selectBtn
           ? folderData.File.map((file) => (
-              <label key={file.id}>
-                <input
-                  type="checkbox"
-                  onChange={(e) => fillsArray(file.id, e.target.checked)}
-                />
-                {file.name}
-              </label>
+              <InputDiv>
+                <label key={file.id}>
+                  <input
+                    type="checkbox"
+                    onChange={(e) => fillsArray(file.id, e.target.checked)}
+                  />
+                  {file.name}
+                </label>
+              </InputDiv>
             ))
           : folderData.File.map((file) => (
               <Btn
@@ -199,7 +247,13 @@ export default function OpenFolder() {
             ))}
       </Nav>
 
-      {loadingMsg && <LoadingDiv>uploading...</LoadingDiv>}
+      {loadingMsg && (
+        <LoadingDivBlurred>
+          <LoadingInsideDiv>
+            <p>Pls wait...</p>
+          </LoadingInsideDiv>
+        </LoadingDivBlurred>
+      )}
 
       <div>
         <FormDiv>

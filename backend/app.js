@@ -49,9 +49,11 @@ app.use(passport.session());
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("hello");
-});
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// app.get("/", (req, res) => {
+//   res.send("hello");
+// });
 
 app.use("/sign-up", signUpRouter);
 
