@@ -85,6 +85,6 @@ app.use((err, req, res, next) => {
   console.error(`error: ${err.message}`);
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log("app running on 3000");
 });
