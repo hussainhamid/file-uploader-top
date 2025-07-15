@@ -120,14 +120,13 @@ export default function OpenFolder() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    setLoadingMsg(true);
-
     const formData = new FormData();
     formData.append("uploadedFile", file);
     formData.append("folderName", folderData.foldername);
     formData.append("userName", folderData.username);
 
     try {
+      setLoadingMsg(true);
       const res = await axios.post(
         `http://localhost:3000/add-file/${folderData.foldername}`,
         formData,
