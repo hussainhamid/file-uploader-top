@@ -49,6 +49,7 @@ model File {
   name     String
   url      String
   mimeType String
+  publicId String
   folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId String
 }

@@ -9,6 +9,7 @@ async function addFileToCloud(req, res) {
       name: file.originalname,
       url: file.path,
       mimeType: file.mimetype,
+      publicId: file.filename,
     };
 
     await db.addFiles(userName, folderName, fileData);
