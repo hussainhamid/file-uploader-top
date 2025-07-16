@@ -182,6 +182,14 @@ async function addFiles(username, foldername, file) {
   });
 }
 
+async function checkUser(username) {
+  await prisma.user.findFirst({
+    where: {
+      username: username,
+    },
+  });
+}
+
 module.exports = {
   getEverything,
   createUser,
@@ -196,4 +204,5 @@ module.exports = {
   deleteAFolder,
   deleteAFile,
   addFiles,
+  checkUser,
 };
