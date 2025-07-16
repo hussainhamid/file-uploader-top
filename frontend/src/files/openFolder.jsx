@@ -128,7 +128,7 @@ export default function OpenFolder() {
     try {
       setLoadingMsg(true);
       const res = await axios.post(
-        `http://localhost:3000/add-file/${folderData.foldername}`,
+        `/add-file/${folderData.foldername}`,
         formData,
         {
           withCredentials: true,
@@ -173,7 +173,7 @@ export default function OpenFolder() {
       setLoadingMsg(true);
       if (checkedBtn.length >= 1) {
         const res = await axios.post(
-          `http://localhost:3000/delete-file/${folderData.foldername}`,
+          `/delete-file/${folderData.foldername}`,
           { files: checkedBtn, user: user },
           { withCredentials: true }
         );
@@ -192,12 +192,9 @@ export default function OpenFolder() {
 
   const fetchFolder = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:3000/folder/${folderName}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`/folder/${folderName}`, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setFolderData(res.data.folder);

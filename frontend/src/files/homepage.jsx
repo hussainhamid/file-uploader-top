@@ -84,7 +84,7 @@ export default function Home() {
   const logout = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3000/log-out", {
+      const res = await axios.get("/log-out", {
         withCredentials: true,
       });
 
@@ -115,7 +115,7 @@ export default function Home() {
       setLoading(true);
       if (checkedBtn.length >= 1) {
         const res = await axios.post(
-          `http://localhost:3000/delete/${user}`,
+          `/delete/${user}`,
           { folders: checkedBtn },
           { withCredentials: true }
         );
@@ -146,12 +146,9 @@ export default function Home() {
 
     try {
       setLoading(true);
-      const res = await axios.get(
-        `http://localhost:3000/create-folder/${user}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`/create-folder/${user}`, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setBtns(res.data.lessFolders);
@@ -169,12 +166,9 @@ export default function Home() {
   const fetchAllFolder = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
-        `http://localhost:3000/create-folder/${user}`,
-        {
-          withCredentials: true,
-        }
-      );
+      const res = await axios.get(`/create-folder/${user}`, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setBtns(res.data.allFolders);

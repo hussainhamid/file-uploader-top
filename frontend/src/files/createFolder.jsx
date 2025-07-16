@@ -87,11 +87,9 @@ export default function CreateFolderForm() {
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        "http://localhost:3000/create-folder",
-        folderTosend,
-        { withCredentials: true }
-      );
+      const res = await axios.post("/create-folder", folderTosend, {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         addFolders(folderTosend);

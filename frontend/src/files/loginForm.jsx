@@ -92,7 +92,7 @@ export default function LoginForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3000/log-in",
+        "/log-in",
         {
           username: data.name,
           email: data.email,

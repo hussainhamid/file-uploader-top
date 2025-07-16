@@ -92,7 +92,7 @@ export default function SignUpForm() {
     try {
       setLoading(true);
       const res = await axios.post(
-        "http://localhost:3000/sign-up",
+        "/sign-up",
         {
           username: data.name,
           email: data.email,

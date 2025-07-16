@@ -60,7 +60,7 @@ export default function App() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await axios.get("http://localhost:3000/me", {
+        const res = await axios.get("/me", {
           withCredentials: true,
         });
 
