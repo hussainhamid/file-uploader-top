@@ -34,6 +34,9 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24,
+      //prod
+      sameSite: "lax",
+      secure: true,
     },
     secret: process.env.SECRET,
     store: new PrismaSessionStore(new PrismaClient(), {
@@ -87,5 +90,4 @@ app.use((err, req, res, next) => {
 
 app.listen(process.env.PORT || 3000, () => {
   console.log("app running on 3000");
-  console.log("db used: ", process.env.DATABASE_URL);
 });
