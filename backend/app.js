@@ -88,6 +88,6 @@ app.use((err, req, res, next) => {
   console.error(`error: ${err.message}`);
 });
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log(`app running on ${process.env.PORT}`);
 });
